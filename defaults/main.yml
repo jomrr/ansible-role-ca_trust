@@ -1,0 +1,21 @@
+---
+# role: ca_trust
+# file: defaults/main.yml
+
+# CA certificates to add or update in the system trust store; other anchors are preserved.
+ca_trust_certificates: []
+# Each entry supplies exactly one PEM-encoded CA certificate through content.
+# Names are unique filename stems; the role appends .crt.
+# The input forms below can be combined in the same list.
+# ca_trust_certificates:
+#   # Inline PEM; replace the abbreviated body with a complete CA certificate.
+#   - name: inline-root
+#     content: |
+#       -----BEGIN CERTIFICATE-----
+#       ...
+#       -----END CERTIFICATE-----
+#
+#   # A file on the Ansible controller, resolved through Ansible's file search path.
+#   # An absolute controller path can also be supplied to the file lookup.
+#   - name: controller-root
+#     content: "{{ lookup('ansible.builtin.file', 'certificates/organization-root.pem') }}"

@@ -1,0 +1,88 @@
+---
+# role: ca_trust
+# file: molecule/dev/molecule.yml
+
+dependency:
+  name: "galaxy"
+  options:
+    role-file: "${MOLECULE_PROJECT_DIRECTORY}/collections.yml"
+    requirements-file: "${MOLECULE_PROJECT_DIRECTORY}/collections.yml"
+driver:
+  name: "podman"
+provisioner:
+  name: "ansible"
+  config_options:
+    defaults:
+      forks: 8
+      interpreter_python: "auto_silent"
+      allow_world_readable_tmpfiles: true
+      callbacks_enabled: "ansible.builtin.default"
+      callback_result_format: "yaml"
+      remote_tmp: "/tmp/.ansible/tmp"
+      display_ok_hosts: false
+      display_skipped_hosts: false
+      show_task_path_on_failure: true
+    ssh_connection:
+      pipelining: true
+  log: true
+  playbooks:
+    converge: "../resources/playbooks/converge.yml"
+    verify: "../resources/playbooks/verify.yml"
+    prepare: "../resources/playbooks/prepare.yml"
+    side_effect: "../resources/playbooks/side_effect.yml"
+  inventory:
+    group_vars:
+      all:
+        ca_trust_certificates:
+          - name: "molecule-root"
+            content: "{{ lookup('ansible.builtin.file', '../files/ca-initial.pem') }}"
+          - name: "molecule-other"
+            content: "{{ lookup('ansible.builtin.file', '../files/ca-other.pem') }}"
+verifier:
+  name: "ansible"
+scenario:
+  test_sequence:
+    - "dependency"
+    - "destroy"
+    - "syntax"
+    - "create"
+    - "prepare"
+    - "check"
+    - "converge"
+    - "idempotence"
+    - "check"
+    - "verify"
+    - "side_effect"
+    - "destroy"
+  name: "dev"
+platforms:
+  - name: "almalinux-latest-ca_trust"
+    image: "docker.io/jomrr/molecule-almalinux:latest"
+    pre_build_image: true
+    override_command: false
+    systemd: "true"
+  - name: "debian-latest-ca_trust"
+    image: "docker.io/jomrr/molecule-debian:latest"
+    pre_build_image: true
+    override_command: false
+    systemd: "true"
+  - name: "fedora-latest-ca_trust"
+    image: "docker.io/jomrr/molecule-fedora:latest"
+    pre_build_image: true
+    override_command: false
+    systemd: "true"
+  - name: "opensuse-leap-latest-ca_trust"
+    image: "docker.io/jomrr/molecule-opensuse-leap:latest"
+    pre_build_image: true
+    override_command: false
+    systemd: "true"
+  - name: "opensuse-tumbleweed-latest-ca_trust"
+    image: "docker.io/jomrr/molecule-opensuse-tumbleweed:latest"
+    pre_build_image: true
+    override_command: false
+    systemd: "true"
+  - name: "ubuntu-latest-ca_trust"
+    image: "docker.io/jomrr/molecule-ubuntu:latest"
+    pre_build_image: true
+    override_command: false
+    systemd: "true"

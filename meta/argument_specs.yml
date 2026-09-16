@@ -1,0 +1,26 @@
+---
+# role: ca_trust
+# file: meta/argument_specs.yml
+
+argument_specs:
+  main:
+    short_description: Install CA certificates and refresh the operating system trust
+      store.
+    options:
+      ca_trust_certificates:
+        type: list
+        elements: dict
+        default: []
+        description: CA certificates to add or update; unlisted certificates are preserved.
+        options:
+          name:
+            type: str
+            required: true
+            description: Unique filename stem, starting with an ASCII letter or digit and
+              containing only ASCII letters, digits, dots, underscores or hyphens. The role
+              appends .crt.
+          content:
+            type: str
+            required: true
+            description: Exactly one PEM-encoded CA certificate, supplied inline or through
+              a controller-side file lookup.

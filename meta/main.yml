@@ -1,0 +1,16 @@
+---
+# role: ca_trust
+# file: meta/main.yml
+
+galaxy_info:
+  author: Jonas Mauer
+  description: Ansible role for installing CA certificates in the operating system trust store.
+  galaxy_tags:
+    - certificates
+    - security
+    - system
+  issue_tracker_url: https://github.com/jomrr/ansible-role-ca_trust/issues
+  license: MIT
+  min_ansible_version: "2.20"
+  namespace: jomrr
+  role_name: ca_trust

@@ -1,0 +1,30 @@
+---
+# role: ca_trust
+# file: molecule/resources/playbooks/prepare.yml
+
+- name: CA_TRUST | Prepare certificate verification
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: CA_TRUST | Wait for test instances
+      ansible.builtin.wait_for_connection:
+        timeout: 60
+
+    - name: CA_TRUST | Refresh the apt package cache
+      become: true
+      become_user: root
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+      when: ansible_facts.pkg_mgr == 'apt'
+
+    - name: CA_TRUST | Copy certificates for trust verification
+      ansible.builtin.copy:
+        src: >-
+          {{ lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') }}/molecule/resources/files/leaf-{{ __ca_trust_fixture }}.pem
+        dest: "/tmp/ca-trust-leaf-{{ __ca_trust_fixture }}.pem"
+        mode: '0644'
+      loop: [initial, replacement, other]
+      loop_control:
+        loop_var: __ca_trust_fixture
+        label: "{{ __ca_trust_fixture }}"

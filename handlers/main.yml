@@ -1,0 +1,11 @@
+---
+# role: ca_trust
+# file: handlers/main.yml
+
+- name: CA_TRUST | Refresh system trust store
+  become: true
+  become_user: root
+  ansible.builtin.command:
+    argv: "{{ __ca_trust_update_command }}"
+  changed_when: true
+  listen: refresh trust store

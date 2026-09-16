@@ -1,0 +1,46 @@
+---
+# role: ca_trust
+# file: molecule/resources/playbooks/side_effect.yml
+
+- name: CA_TRUST | Verify CA replacement and preservation
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: CA_TRUST | Replace one CA while leaving the other unlisted
+      ansible.builtin.include_role:
+        name: "{{ lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') }}"
+      vars:
+        ca_trust_certificates:
+          - name: molecule-root
+            content: "{{ lookup('ansible.builtin.file', '../files/ca-replacement.pem') }}"
+
+    - name: CA_TRUST | Verify replacement and preserved trust immediately after the role
+      ansible.builtin.command:
+        argv:
+          - openssl
+          - verify
+          - /tmp/ca-trust-leaf-replacement.pem
+          - /tmp/ca-trust-leaf-other.pem
+      changed_when: false
+
+    - name: CA_TRUST | Verify the replaced CA is no longer trusted
+      ansible.builtin.command:
+        argv: [openssl, verify, /tmp/ca-trust-leaf-initial.pem]
+      changed_when: false
+      register: __ca_trust_replaced
+      failed_when: __ca_trust_replaced.rc != 2
+
+    - name: CA_TRUST | Apply an empty certificate list
+      ansible.builtin.include_role:
+        name: "{{ lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') }}"
+      vars:
+        ca_trust_certificates: []
+
+    - name: CA_TRUST | Verify an empty list preserves system trust
+      ansible.builtin.command:
+        argv:
+          - openssl
+          - verify
+          - /tmp/ca-trust-leaf-replacement.pem
+          - /tmp/ca-trust-leaf-other.pem
+      changed_when: false

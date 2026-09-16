@@ -1,0 +1,63 @@
+---
+# role: ca_trust
+# file: tasks/main.yml
+
+- name: CA_TRUST | Validate certificate names
+  ansible.builtin.assert:
+    that:
+      - >-
+        ca_trust_certificates | map(attribute='name') | unique(case_sensitive=true) | length
+        == ca_trust_certificates | length
+      - >-
+        ca_trust_certificates | map(attribute='name')
+        | select('match', '^[A-Za-z0-9][A-Za-z0-9_.-]*$') | list | length
+        == ca_trust_certificates | length
+    fail_msg: Certificate names must be unique filename stems containing only ASCII letters, digits, dots, underscores or hyphens.
+    quiet: true
+
+- name: CA_TRUST | Load platform settings
+  ansible.builtin.include_vars: "{{ lookup('ansible.builtin.first_found', __ca_trust_platform_files) }}"
+  vars:
+    __ca_trust_platform_files:
+      files:
+        - "{{ ansible_facts.os_family }}.yml"
+      paths:
+        - "{{ role_path }}/vars"
+
+- name: CA_TRUST | Install trust store tools
+  become: true
+  become_user: root
+  ansible.builtin.package:
+    name:
+      - ca-certificates
+      - openssl
+    state: present
+
+- name: CA_TRUST | Create the local trust anchor directory
+  become: true
+  become_user: root
+  ansible.builtin.file:
+    path: "{{ __ca_trust_anchor_directory }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: CA_TRUST | Install CA certificates
+  become: true
+  become_user: root
+  ansible.builtin.copy:
+    content: "{{ __ca_trust_certificate.content }}"
+    dest: "{{ __ca_trust_anchor_directory }}/{{ __ca_trust_certificate.name }}.crt"
+    owner: root
+    group: root
+    mode: '0644'
+    validate: "{{ __ca_trust_validate_command }}"
+  loop: "{{ ca_trust_certificates }}"
+  loop_control:
+    loop_var: __ca_trust_certificate
+    label: "{{ __ca_trust_certificate.name }}"
+  notify: refresh trust store
+
+- name: CA_TRUST | Apply trust store changes
+  ansible.builtin.meta: flush_handlers

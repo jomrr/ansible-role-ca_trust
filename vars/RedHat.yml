@@ -1,0 +1,7 @@
+---
+# role: ca_trust
+# file: vars/RedHat.yml
+
+__ca_trust_anchor_directory: /etc/pki/ca-trust/source/anchors
+__ca_trust_update_command: [update-ca-trust, extract]
+__ca_trust_validate_command: openssl x509 -inform PEM -in %s -noout

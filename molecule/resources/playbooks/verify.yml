@@ -1,0 +1,23 @@
+---
+# role: ca_trust
+# file: molecule/resources/playbooks/verify.yml
+
+- name: CA_TRUST | Verify system CA trust
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: CA_TRUST | Verify certificates through the default system trust store
+      ansible.builtin.command:
+        argv:
+          - openssl
+          - verify
+          - /tmp/ca-trust-leaf-initial.pem
+          - /tmp/ca-trust-leaf-other.pem
+      changed_when: false
+
+    - name: CA_TRUST | Verify an uninstalled CA is not trusted
+      ansible.builtin.command:
+        argv: [openssl, verify, /tmp/ca-trust-leaf-replacement.pem]
+      changed_when: false
+      register: __ca_trust_untrusted
+      failed_when: __ca_trust_untrusted.rc != 2
