@@ -3,8 +3,8 @@
 ![GitHub](https://img.shields.io/github/license/jomrr/ansible-role-ca_trust)
 ![GitHub last commit](https://img.shields.io/github/last-commit/jomrr/ansible-role-ca_trust)
 ![GitHub issues](https://img.shields.io/github/issues-raw/jomrr/ansible-role-ca_trust)
-[![dev](https://img.shields.io/github/actions/workflow/status/jomrr/ansible-role-ca_trust/dev.yml?branch=dev&event=push&label=dev)](https://github.com/jomrr/ansible-role-ca_trust/actions/workflows/dev.yml?query=branch%3Adev)
-[![main](https://img.shields.io/github/actions/workflow/status/jomrr/ansible-role-ca_trust/main.yml?branch=main&event=push&label=main)](https://github.com/jomrr/ansible-role-ca_trust/actions/workflows/main.yml?query=branch%3Amain)
+[![dev](https://img.shields.io/github/actions/workflow/status/jomrr/ansible-role-ca_trust/dev.yml?branch=dev&label=dev)](https://github.com/jomrr/ansible-role-ca_trust/actions/workflows/dev.yml?query=branch%3Adev)
+[![main](https://img.shields.io/github/actions/workflow/status/jomrr/ansible-role-ca_trust/main.yml?branch=main&label=main)](https://github.com/jomrr/ansible-role-ca_trust/actions/workflows/main.yml?query=branch%3Amain)
 
 Ansible role for installing CA certificates in the operating system trust store.
 
